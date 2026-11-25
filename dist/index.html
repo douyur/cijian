@@ -6,6 +6,7 @@
   <meta name="description" content="在浏览器里检查中文文案，定位风险表达、应用建议并复检。">
   <meta name="theme-color" content="#17142d">
   <title>词检 · 文案风险检测</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="workbench.css">
   <script src="rules.js" defer></script>
@@ -20,7 +21,7 @@
     <div class="main-shell">
       <header class="topbar">
         <div class="topbar-inner">
-          <button class="brand" type="button" data-page="check" aria-label="词检首页"><span class="brand-icon" data-icon="brand"></span><strong>词检</strong></button>
+          <button class="brand" type="button" data-page="check" aria-label="词检首页"><img class="brand-icon" src="favicon.svg" width="36" height="36" alt=""><strong>词检</strong></button>
           <nav class="top-nav" aria-label="工作台">
             <button class="text-button" type="button" data-help><span data-icon="help"></span>使用指南</button>
             <button class="top-dictionary" type="button" data-page="history"><span data-icon="history"></span>检测历史</button>
@@ -129,7 +130,7 @@
   </div>
   <dialog id="help" aria-labelledby="help-title">
     <div class="dialog-head"><h2 id="help-title">使用指南</h2><button type="button" class="secondary" id="close-help" aria-label="关闭"><span data-icon="close"></span></button></div>
-    <ol><li>使用通用词库，再按需勾选小红书、淘宝、抖音或视频号。</li><li>选择检测方式，点击「开始检测」。点击报告里的命中词可定位原文。</li><li>可逐处应用建议，或通过「违禁词替换」批量处理，确认后自动复检。</li></ol>
+    <ol><li>默认启用全部词库，可按需关闭平台词库。</li><li>选择检测方式，点击「开始检测」。点击报告里的命中词可定位原文。</li><li>可逐处应用建议，或通过「违禁词替换」批量处理，确认后自动复检。</li></ol>
     <p>检测在浏览器内完成。手动检测的文案会保存在此浏览器的检测历史中，你可以随时清空。</p>
   </dialog>
   <dialog id="replacement-dialog" class="replacement-dialog" aria-labelledby="replacement-title">

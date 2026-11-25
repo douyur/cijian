@@ -3,7 +3,6 @@
 const { levels, levelOrder, scenarios, sources, builtIn, detect, normalize, scenarioLabel } = globalThis.Cijian;
 const catalogDate = '2026-11-25';
 const svg = {
-  brand: '<path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3M7.5 10.5h9m-7 4h5"/>',
   scan: '<path d="M7 3H4a1 1 0 0 0-1 1v3m14-4h3a1 1 0 0 1 1 1v3M3 17v3a1 1 0 0 0 1 1h3m14-4v3a1 1 0 0 1-1 1h-3M3 12h18"/>',
   book: '<path d="M4 19V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1 0-4h13M8 7h7m-7 4h5"/>',
   history: '<path d="M3 12a9 9 0 1 1 2.5 6.2M3 12V7m0 5h5m4-5v5l3 2"/>',
@@ -68,7 +67,7 @@ function storeList(key, value) {
 
 let custom = readList('dictionary');
 let history = readList('history');
-let scenario = [];
+let scenario = Object.keys(scenarios).filter(key => key !== 'general');
 let dictionaryScope = 'all';
 let ignored = new Set();
 let matches = [];
