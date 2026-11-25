@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在浏览器里检查中文文案，定位风险表达、应用建议并复检。">
+  <meta name="theme-color" content="#17142d">
+  <title>词检 · 文案风险检测</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="workbench.css">
+  <script src="rules.js" defer></script>
+  <script src="replacement-data.js" defer></script>
+  <script src="replacement.js" defer></script>
+  <script src="replacement-ui.js" defer></script>
+  <script src="sources.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <button class="brand" type="button" data-page="check" aria-label="词检首页"><span class="brand-icon" data-icon="brand"></span><strong>词检</strong></button>
+          <nav class="top-nav" aria-label="工作台">
+            <button class="text-button" type="button" data-help><span data-icon="help"></span>使用指南</button>
+            <button class="top-dictionary" type="button" data-page="history"><span data-icon="history"></span>检测历史</button>
+            <button class="top-dictionary" type="button" data-page="dictionary"><span data-icon="book"></span>词库</button>
+          </nav>
+        </div>
+      </header>
+      <main class="main">
+        <div id="check-page">
+          <section class="scenarios" aria-label="检测场景">
+            <span class="scenario-label"><span data-icon="sliders"></span>检测词库</span>
+            <div class="scenario-options" id="scenarios" role="group" aria-label="选择检测场景"></div>
+              <span class="catalog-meta" id="catalog-meta"></span>
+          </section>
+          <section class="panel workbench" aria-label="检测工作台">
+            <div class="workbench-head">
+              <div id="source-tabs" class="source-tabs" role="group" aria-label="检测方式"></div>
+              <button class="text-button history-shortcut" type="button" data-page="history"><span data-icon="history"></span>查询记录</button>
+            </div>
+            <div class="workspace">
+            <section class="panel editor-panel" aria-labelledby="editor-heading">
+              <header class="panel-head"><span class="panel-icon" data-icon="edit"></span><div><h2 id="editor-heading">待检文案</h2><p>输入、粘贴或导入需要检测的文字</p></div></header>
+              <div class="editor-body">
+                <div id="source-options" class="source-options" hidden>
+                  <label for="source-url" id="source-url-label">网页地址</label>
+                  <input type="url" id="source-url" placeholder="https://example.com/文章" autocomplete="off">
+                  <input type="file" id="source-file" hidden>
+                  <div class="source-picker"><button class="secondary" type="button" id="choose-source"><span data-icon="upload"></span><span id="source-file-label"></span></button><span id="source-file-name" class="muted"></span></div>
+                  <p id="source-hint" class="source-hint"></p>
+                  <p id="source-progress" class="source-progress" role="status"></p>
+                </div>
+                <div class="editor-actions">
+                  <button type="button" class="text-button example-button" id="example"><span data-icon="sparkle"></span>载入示例</button>
+                  <button type="button" class="text-button" id="import"><span data-icon="upload"></span>导入 TXT</button>
+                </div>
+                <input type="file" id="file-input" accept=".txt,text/plain" hidden>
+                <div class="editor-field">
+                  <div class="editor-mirror" id="mirror" aria-hidden="true"></div>
+                  <textarea id="text" aria-label="待检文案" spellcheck="false" placeholder="在这里输入或粘贴文案…"></textarea>
+                </div>
+                <div class="editor-info"><span id="editor-mode"></span><span id="character-count"></span></div>
+              </div>
+              <footer class="editor-footer editor-controls">
+                <button type="button" class="secondary" id="clear"><span data-icon="trash"></span>清空</button>
+                <button class="primary" id="scan" type="button"><span data-icon="scan"></span><span id="scan-label">开始检测</span></button>
+              </footer>
+            </section>
+            <section class="panel review-panel" aria-labelledby="review-heading">
+              <header class="panel-head"><span class="panel-icon" data-icon="scan"></span><div><h2 id="review-heading">检测结果</h2><p>在原文语境中查看命中位置</p></div></header>
+              <div class="review-body"><div id="review-text" class="review-text" aria-label="命中高亮预览"></div><p id="review-status" class="review-status" role="status"></p></div>
+              <footer class="editor-footer result-actions">
+                <button class="secondary replace-button" id="open-replacement" type="button"><span data-icon="replace"></span>违禁词替换</button>
+                <button class="secondary" id="copy" type="button"><span data-icon="copy"></span>复制文案</button>
+              </footer>
+            </section>
+            </div>
+          </section>
+          <section class="panel results-panel report-panel" aria-labelledby="results-heading">
+            <header class="panel-head">
+              <span class="panel-icon" data-icon="report"></span><div><h2 id="results-heading">检测报告</h2><p id="results-description">查看命中内容与修改建议</p></div>
+              <button class="text-button report-dictionary" type="button" data-page="dictionary"><span data-icon="book"></span>自定义词库</button>
+              <button class="secondary export-button" id="export" type="button"><span data-icon="download"></span>导出报告</button>
+            </header>
+            <div id="results" class="results-content"></div>
+          </section>
+          <p class="footnote"><span data-icon="info"></span>检测结果用于编辑自查。请结合发布平台、产品资质和具体语境核对。</p>
+        </div>
+        <section id="dictionary-page" class="subpage" hidden aria-labelledby="dictionary-heading">
+          <h1 id="dictionary-heading">词库管理</h1>
+          <p class="subhead">浏览内置规则，或添加品牌与团队专用的检测词。</p>
+          <section class="panel settings-panel">
+            <header class="settings-heading"><h2>自定义词</h2><span class="muted">保存在当前浏览器</span></header>
+            <form id="word-form" class="word-form">
+              <label>检测词<input id="custom-word" required maxlength="60" placeholder="例如：内部专供"></label>
+              <label>风险级别
+                <span class="risk-select">
+                  <select id="custom-level">
+                    <option value="high">高风险</option>
+                    <option value="medium" selected>敏感词</option>
+                    <option value="low">提示</option>
+                  </select>
+                </span>
+              </label>
+              <label>替换建议（选填）<input id="custom-suggestion" maxlength="100" placeholder="例如：会员专享"></label>
+              <button class="primary" type="submit"><span data-icon="plus"></span>添加词条</button>
+            </form>
+            <div id="custom-list" class="rule-list"></div>
+          </section>
+          <section class="panel settings-panel">
+            <header class="settings-heading"><h2>内置规则 <span id="rule-count" class="muted"></span></h2><input id="rule-search" type="search" placeholder="搜索词条或分类" aria-label="搜索词条或分类"></header>
+            <p class="muted">收录公开规则示例及同类风险表述。点击词条来源可查看依据，具体判定请结合发布语境。</p>
+            <div id="dictionary-scopes" class="scenario-options dictionary-scopes" role="group" aria-label="筛选词库"></div>
+            <div id="rules-list" class="rule-list"></div>
+          </section>
+        </section>
+        <section id="history-page" class="subpage" hidden aria-labelledby="history-heading">
+          <h1 id="history-heading">检测历史</h1>
+          <p class="subhead">最近 20 次检测保存在当前浏览器，可重新打开和编辑。</p>
+          <section class="panel settings-panel">
+            <header class="settings-heading"><h2>最近检测</h2><button class="secondary" id="clear-history" type="button"><span data-icon="trash"></span>清空历史</button></header>
+            <div id="history-list" class="rule-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+  <dialog id="help" aria-labelledby="help-title">
+    <div class="dialog-head"><h2 id="help-title">使用指南</h2><button type="button" class="secondary" id="close-help" aria-label="关闭"><span data-icon="close"></span></button></div>
+    <ol><li>使用通用词库，再按需勾选小红书、淘宝、抖音或视频号。</li><li>选择检测方式，点击「开始检测」。点击报告里的命中词可定位原文。</li><li>可逐处应用建议，或通过「违禁词替换」批量处理，确认后自动复检。</li></ol>
+    <p>检测在浏览器内完成。手动检测的文案会保存在此浏览器的检测历史中，你可以随时清空。</p>
+  </dialog>
+  <dialog id="replacement-dialog" class="replacement-dialog" aria-labelledby="replacement-title">
+    <div class="dialog-head replacement-head"><div><h2 id="replacement-title">违禁词替换</h2><p>替换后的文案仍需结合发布语境复核。</p></div><button class="secondary" id="close-replacement" type="button" aria-label="关闭替换窗口"><span data-icon="close"></span></button></div>
+    <div class="replacement-layout">
+      <div class="replacement-document">
+        <label for="replacement-text">替换预览</label>
+        <textarea id="replacement-text" spellcheck="false" readonly></textarea>
+        <p class="replacement-status" id="replacement-status" role="status"></p>
+        <div class="replacement-document-actions">
+          <button class="secondary" id="replacement-undo" type="button" aria-label="撤销" title="撤销"><span data-icon="undo"></span></button>
+          <button class="secondary" id="replacement-redo" type="button" aria-label="重做" title="重做"><span data-icon="redo"></span></button>
+          <select id="replacement-delete" aria-label="删除违禁词"><option value="">删除违禁词</option><option value="all">删除所有命中</option><option value="high">仅删除禁用词</option><option value="sensitive">仅删除敏感词</option></select>
+          <button class="secondary" id="replacement-copy" type="button"><span data-icon="copy"></span>复制文案</button>
+        </div>
+      </div>
+      <div class="replacement-controls">
+        <div class="replacement-tabs" role="group" aria-label="替换方式"><button id="quick-tab" type="button" class="scenario-button" aria-pressed="true">快捷替换</button><button id="custom-tab" type="button" class="scenario-button" aria-pressed="false">自定义替换</button></div>
+        <div id="quick-replacement">
+          <fieldset><legend>替换范围 <small>当前启用的系统词库</small></legend><div id="replacement-scope" class="replacement-options"></div></fieldset>
+          <fieldset><legend>替换形式</legend><div id="replacement-formats" class="replacement-options format-options"></div></fieldset>
+        </div>
+        <div id="custom-replacement" hidden>
+          <div class="custom-replacement-labels"><span>原词</span><span>替换为</span><span></span></div>
+          <div id="replacement-mappings"></div>
+          <div class="custom-replacement-tools">
+            <button class="secondary" id="replacement-add" type="button"><span data-icon="plus"></span>添加词条</button>
+            <button class="secondary" id="replacement-picker-toggle" type="button" aria-expanded="false" aria-controls="replacement-picker"><span data-icon="scan"></span>选择命中词</button>
+          </div>
+          <div class="replacement-picker" id="replacement-picker" hidden>
+            <input id="replacement-picker-search" type="search" placeholder="搜索命中词" aria-label="搜索命中词" autocomplete="off">
+            <div id="replacement-picker-terms" class="replacement-picker-terms"></div>
+            <p id="replacement-picker-count" class="replacement-picker-count" role="status"></p>
+          </div>
+          <p class="custom-replacement-hint">留空「替换为」会删除该词。快捷替换后的词也可按原词选取。</p>
+          <p id="custom-replacement-feedback" class="custom-replacement-feedback" role="status"></p>
+        </div>
+        <div class="replacement-commit"><button class="secondary" id="replacement-apply" type="button">应用到文案</button><button class="primary" id="replacement-run" type="button"><span data-icon="replace"></span>一键替换</button></div>
+      </div>
+    </div>
+  </dialog>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
